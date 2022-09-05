@@ -16,7 +16,8 @@ app.get('/', (req, res) => res.send('<h1>Hello world</h1>'));
 
 var rooms = new Map()
 
-const { joinRoom } = require('.players.js')
+const { joinRoom } = require('.players.js');
+const { SocketAddress } = require('net');
 const generateRoom = () => {
     var result = '';
     var hexChars = '0123456789abcdef';
@@ -34,7 +35,20 @@ io.on('connection', (socket) => {
     })
 
     socket.on('joinRoom', ({username, room}) => {
-        socket.join(room)
-        joinRoom(room, username, socket.id);
+        if (username == '' || room == '') {
+            socket.emit('joinError');
+        }
+
+        if (rooms.has(room)) {
+            socket.join(room);
+            joinRoom(room, username, socket.id);
+            if (rooms.get(room).length == 2) {
+                io.to(room).emit('gameStarting');
+            }
+            socket.emit('joinSucesss');
+            io.to(room).emit('newPlayerJoined');
+        } else {
+            socket.emit('joinError');
+        }
     })
 })
