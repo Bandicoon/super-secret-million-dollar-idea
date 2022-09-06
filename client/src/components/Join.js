@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Grid, TextField, Button, Typography } from "@material-ui/core";
-import { SocketContext } from './context/socket';
+import { SocketContext } from '../context/socket';
 
 const initialValues = {
 	username: "",
@@ -9,7 +9,7 @@ const initialValues = {
 
 const Form = () => {
 	const [values, setValues] = useState(initialValues);
-    const socket = useContext(socket);
+    const socket = useContext(SocketContext);
 
     const handleJoinSuccess = () => {
         
@@ -30,6 +30,10 @@ const Form = () => {
 			[e.target.name]: e.target.value,
 		});
 	};
+
+    const joinRoom = () => {
+
+    }
 
 	return (
     <form onSubmit={joinRoom}>
