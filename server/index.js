@@ -8,15 +8,19 @@ const PORT = process.env.PORT || 5000;
 
 const app = express();
 const server = http.createServer(app);
-const io = socketio(server);
+const io = socketio(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        credentials: true,
+    }
+});
 
 app.use(cors());
 
 app.get('/', (req, res) => res.send('<h1>Hello world</h1>'));
 
-var rooms = new Map()
-
-const { joinRoom } = require('./players.js');
+const { rooms, joinRoom } = require('./players.js');
 
 const generateRoom = () => {
     var result = '';
@@ -28,27 +32,32 @@ const generateRoom = () => {
 }
 
 io.on('connection', (socket) => {
+    console.log(`${socket.id} has connected`)
+
     socket.on('createRoom', (username) => {
         const room = generateRoom();
         socket.join(room);
-        joinRoom(username, socket.id, room);
+        joinRoom(rooms, room, username, socket.id);
     })
 
-    socket.on('joinRoom', ({username, room}) => {
-        if (username == '' || room == '') {
-            socket.emit('joinError');
+    socket.on('joinRoom', ({username, room}, callback) => {
+        console.log(username, room)
+        if (username === '' || room === '') {
+            callback('Please enter username and room ID')
         }
 
         if (rooms.has(room)) {
             socket.join(room);
-            joinRoom(room, username, socket.id);
+            joinRoom(rooms, room, username, socket.id);
+            console.log(rooms);
+            io.to(room).emit('joinSuccess', rooms.get(room));
             if (rooms.get(room).length == 2) {
                 io.to(room).emit('gameStarting');
             }
-            socket.emit('joinSucesss');
-            io.to(room).emit('newPlayerJoined');
         } else {
             socket.emit('joinError');
         }
     })
 })
+
+server.listen(PORT, () => console.log('server is up and running'))

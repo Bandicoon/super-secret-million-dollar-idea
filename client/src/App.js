@@ -14,8 +14,8 @@ const App = () => {
         <SocketContext.Provider value={socket}>
             <Router>
                 <Routes>
-                    <Route path="/" exact element={<Join socket={socket}/>}/>
-                    <Route path="/:roomId" element={<PlayerBoard socket={socket}/>}/>
+                    <Route path="/" exact element={<Join/>}/>
+                    <Route path="/board/:room" element={<PlayerBoard/>}/>
                 </Routes>
             </Router>
         </SocketContext.Provider>

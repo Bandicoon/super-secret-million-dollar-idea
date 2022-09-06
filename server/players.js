@@ -1,9 +1,11 @@
 const rooms = new Map()
+rooms.set('123', [])
 
-const joinRoom = (username, uId, room) => {
+const joinRoom = (rooms, room, username, socketId) => {
     currentPlayers = rooms.get(room)
-    updatedPlayers = currentPlayers.push({uId: socket.id, uName: username })
-    rooms.set(room, updatedPlayers)
+    if (!currentPlayers.some(player => player.username === username)) {
+        currentPlayers.push({ username, socketId })
+    }
 }   
 
-modules.export = { joinRoom }
+module.exports = { rooms, joinRoom }

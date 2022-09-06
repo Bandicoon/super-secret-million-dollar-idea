@@ -1,27 +1,29 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Grid, TextField, Button, Typography } from "@material-ui/core";
+import { useNavigate } from 'react-router-dom';
 import { SocketContext } from '../context/socket';
 
 const initialValues = {
 	username: "",
-	roomId: "",
+	room: "",
 };
 
 const Form = () => {
 	const [values, setValues] = useState(initialValues);
     const socket = useContext(SocketContext);
+	let navigate = useNavigate();
 
-    const handleJoinSuccess = () => {
-        
+    const handleJoinSuccess = (data) => {
+        navigate("/board/" + values.room, {state: data})
     }
 
 	useEffect(() => {
-        socket.on('joinSuccess', handleJoinSuccess);
+        socket.on('joinSuccess', (data) => handleJoinSuccess(data));
         
 		return () => {
 		    socket.off('joinSuccess', handleJoinSuccess);
 		};
-	}, [socket]);
+	}, [socket, values]);
 
 	const handleChange = (e) => {
 		const value = e.target.value;
@@ -31,32 +33,31 @@ const Form = () => {
 		});
 	};
 
-    const joinRoom = () => {
-
+    const joinRoom = (e) => {
+		e.preventDefault()
+        socket.emit('joinRoom', {...values }, (error) => alert(error));
     }
 
 	return (
     <form onSubmit={joinRoom}>
-		<Grid container direction="column" alignItems="center" justify="center">
+		<Grid container direction="column" alignItems="center" justifyContent="center">
 			<TextField
 				variant="outlined"
 				name="username"
 				label="Username"
-				fullwidth
 				style={{ marginBottom: "2em" }}
 				onChange={handleChange}
 				value={values.username}
                 />
 			<TextField
 				variant="outlined"
-				label="Room ID"
-				name="roomId"
-				fullwidth
+				label="Room"
+				name="room"
 				style={{ marginBottom: "2em" }}
 				onChange={handleChange}
-				value={values.roomId}
+				value={values.room}
                 />
-			<Button size="large" variant="contained" color="primary">
+			<Button type="submit" size="large" variant="contained" color="primary">
 				Join
 			</Button>
 		</Grid>
@@ -68,7 +69,7 @@ const Join = ({ socket }) => {
 	return (
 		<Grid
 			container
-			justify="center"
+			justifyContent="center"
 			alignItems="center"
 			direction="column"
 			style={{ minHeight: "100vh" }}

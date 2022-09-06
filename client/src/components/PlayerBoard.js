@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useLocation, useNavigate } from "react-router-dom";
+import { SocketContext } from '../context/socket';
 
 const Circle = styled.div`
-    
 `
 
 const Board = styled.div`
@@ -23,23 +23,20 @@ const Player = styled.div`
     transform: translate3d(-50%, -50%, 0);
 `
 
-const PlayerBoard = ({ socket }) => {
-    // const location = useLocation();
+const PlayerBoard = () => {
+    const socket = useContext(SocketContext);
+    const location = useLocation();
+    const [players, setPlayers] = useState(location.state);
+    const numPlayers = players.length;
 
     useEffect(() => {
-        // const { room } = location.state;
-        
-        // socket.emit('join', { username, room }, (error) => {
-        //     alert(error);
-        // })
-        // return () => {
-            
-        // } 
-    }, [])
+        socket.on('joinSuccess', (data) => setPlayers(data));
+        return () => {
+		    socket.off('joinSuccess', (data) => setPlayers(data));
+		};
+    }, [socket]) 
     
-    let numplayers = 4;
-
-    let size = 500;
+    let size = 400;
     let r = size/2 + 80;
   
     
@@ -47,7 +44,7 @@ const PlayerBoard = ({ socket }) => {
         return deg * Math.PI / 180;
     }
 
-    let theta = 2*Math.PI/numplayers;
+    let theta = 2*Math.PI/numPlayers;
 
     return (
         <Board>
@@ -57,11 +54,11 @@ const PlayerBoard = ({ socket }) => {
                 borderRadius: size/2}}>
             </Circle>
 
-            {Array(numplayers).fill().map((val, idx) => {
+            {Array(numPlayers).fill().map((val, idx) => {
                 return(
                     <Player style={{
-                        top: `calc(${r*Math.cos(2*Math.PI/numplayers*idx)}px + 50%)`,
-                        left: `calc(${r*Math.sin(2*Math.PI/numplayers*idx)}px + 50%)`
+                        top: `calc(${r*Math.cos(2*Math.PI/numPlayers*idx)}px + 50%)`,
+                        left: `calc(${r*Math.sin(2*Math.PI/numPlayers*idx)}px + 50%)`
                     }}/>
                 )
             })}
