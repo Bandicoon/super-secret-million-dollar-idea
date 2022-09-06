@@ -16,8 +16,8 @@ app.get('/', (req, res) => res.send('<h1>Hello world</h1>'));
 
 var rooms = new Map()
 
-const { joinRoom } = require('.players.js');
-const { SocketAddress } = require('net');
+const { joinRoom } = require('./players.js');
+
 const generateRoom = () => {
     var result = '';
     var hexChars = '0123456789abcdef';
