@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import styled from 'styled-components';
+import ParticlesBackground from './components/Particles';
 
 const Circle = styled.div`
     
@@ -38,6 +39,7 @@ const App = () => {
     
     return (
         <Board>
+            <ParticlesBackground></ParticlesBackground>
             <Circle style={{backgroundColor: "red", 
                 width: size,
                 height: size,
