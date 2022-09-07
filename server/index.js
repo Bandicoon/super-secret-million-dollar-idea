@@ -44,18 +44,21 @@ io.on('connection', (socket) => {
         console.log(username, room)
         if (username === '' || room === '') {
             callback('Please enter username and room ID')
+            return;
         }
 
         if (rooms.has(room)) {
+            if (joinRoom(rooms, room, username, socket.id) === -1) {
+                callback('Username already exists');
+                return;
+            };
             socket.join(room);
-            joinRoom(rooms, room, username, socket.id);
-            console.log(rooms);
             io.to(room).emit('joinSuccess', rooms.get(room));
             if (rooms.get(room).length == 2) {
                 io.to(room).emit('gameStarting');
             }
         } else {
-            socket.emit('joinError');
+            callback('Room does not exist');
         }
     })
 })
