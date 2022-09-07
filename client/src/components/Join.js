@@ -15,7 +15,7 @@ const Form = () => {
 	const location = useLocation();
 
 	useEffect(() => {
-		if (location.state.room) {
+		if (location.state) {
 			setValues({ ...values, room: location.state.room });
 		}
 	}, [location]);
