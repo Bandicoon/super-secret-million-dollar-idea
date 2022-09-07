@@ -39,7 +39,7 @@ io.on('connection', (socket) => {
         socket.join(room);
         joinRoom(rooms, room, username, socket.id);
     })
-
+5
     socket.on('joinRoom', ({username, room}, callback) => {
         console.log(username, room)
         if (username === '' || room === '') {
