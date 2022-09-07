@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, Navigate } from "react-router-dom";
 import { SocketContext } from '../context/socket';
 
 const Circle = styled.div`
@@ -21,14 +21,27 @@ const Player = styled.div`
     background-color: blue;
     position: absolute;
     transform: translate3d(-50%, -50%, 0);
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & > p {
+        font-family: Roboto;
+        font-size: 20px;
+        color: white;
+    }
 `
 
 const PlayerBoard = () => {
     const socket = useContext(SocketContext);
     const location = useLocation();
-    const [players, setPlayers] = useState(location.state);
-    const numPlayers = players.length;
 
+    var initState = location.state || null;
+    
+    const [players, setPlayers] = useState(initState);
+    const numPlayers = players ? players.length : -1;
+    
     useEffect(() => {
         socket.on('joinSuccess', (data) => setPlayers(data));
         return () => {
@@ -39,7 +52,6 @@ const PlayerBoard = () => {
     let size = 400;
     let r = size/2 + 80;
   
-    
     function degToRad(deg) {
         return deg * Math.PI / 180;
     }
@@ -47,6 +59,7 @@ const PlayerBoard = () => {
     let theta = 2*Math.PI/numPlayers;
 
     return (
+        players ? 
         <Board>
             <Circle style={{backgroundColor: "red", 
                 width: size,
@@ -54,15 +67,18 @@ const PlayerBoard = () => {
                 borderRadius: size/2}}>
             </Circle>
 
-            {Array(numPlayers).fill().map((val, idx) => {
+            {players.map((val, idx) => {
                 return(
                     <Player style={{
                         top: `calc(${r*Math.cos(2*Math.PI/numPlayers*idx)}px + 50%)`,
                         left: `calc(${r*Math.sin(2*Math.PI/numPlayers*idx)}px + 50%)`
-                    }}/>
+                    }}>
+                        <p>{val.username}</p>
+                    </Player>
                 )
             })}
-        </Board>
+        </Board> :
+        <Navigate to="/" state={{room: window.location.pathname.slice(7)}}/>
     )
 }
 
