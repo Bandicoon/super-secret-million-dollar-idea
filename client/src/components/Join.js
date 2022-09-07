@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Grid, TextField, Button, Typography } from "@material-ui/core";
-import { useNavigate } from 'react-router-dom';
-import { SocketContext } from '../context/socket';
+import { useLocation, useNavigate } from "react-router-dom";
+import { SocketContext } from "../context/socket";
 
 const initialValues = {
 	username: "",
@@ -10,18 +10,25 @@ const initialValues = {
 
 const Form = () => {
 	const [values, setValues] = useState(initialValues);
-    const socket = useContext(SocketContext);
-	let navigate = useNavigate();
-
-    const handleJoinSuccess = (data) => {
-        navigate("/board/" + values.room, {state: data})
-    }
+	const socket = useContext(SocketContext);
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	useEffect(() => {
-        socket.on('joinSuccess', (data) => handleJoinSuccess(data));
-        
+		if (location.state.room) {
+			setValues({ ...values, room: location.state.room });
+		}
+	}, [location]);
+
+	const handleJoinSuccess = (data) => {
+		navigate("/board/" + values.room, { state: data });
+	};
+
+	useEffect(() => {
+		socket.on("joinSuccess", (data) => handleJoinSuccess(data));
+
 		return () => {
-		    socket.off('joinSuccess', handleJoinSuccess);
+			socket.off("joinSuccess", handleJoinSuccess);
 		};
 	}, [socket, values]);
 
@@ -33,35 +40,45 @@ const Form = () => {
 		});
 	};
 
-    const joinRoom = (e) => {
-		e.preventDefault()
-        socket.emit('joinRoom', {...values }, (error) => alert(error));
-    }
+	const joinRoom = (e) => {
+		e.preventDefault();
+		socket.emit("joinRoom", { ...values }, (error) => alert(error));
+	};
 
 	return (
-    <form onSubmit={joinRoom}>
-		<Grid container direction="column" alignItems="center" justifyContent="center">
-			<TextField
-				variant="outlined"
-				name="username"
-				label="Username"
-				style={{ marginBottom: "2em" }}
-				onChange={handleChange}
-				value={values.username}
-                />
-			<TextField
-				variant="outlined"
-				label="Room"
-				name="room"
-				style={{ marginBottom: "2em" }}
-				onChange={handleChange}
-				value={values.room}
-                />
-			<Button type="submit" size="large" variant="contained" color="primary">
-				Join
-			</Button>
-		</Grid>
-    </form>
+		<form onSubmit={joinRoom}>
+			<Grid
+				container
+				direction="column"
+				alignItems="center"
+				justifyContent="center"
+			>
+				<TextField
+					variant="outlined"
+					name="username"
+					label="Username"
+					style={{ marginBottom: "2em" }}
+					onChange={handleChange}
+					value={values.username}
+				/>
+				<TextField
+					variant="outlined"
+					label="Room"
+					name="room"
+					style={{ marginBottom: "2em" }}
+					onChange={handleChange}
+					value={values.room}
+				/>
+				<Button
+					type="submit"
+					size="large"
+					variant="contained"
+					color="primary"
+				>
+					Join
+				</Button>
+			</Grid>
+		</form>
 	);
 };
 
