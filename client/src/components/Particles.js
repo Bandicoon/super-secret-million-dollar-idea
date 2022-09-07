@@ -351,7 +351,7 @@ const ParticlesBackground = () => {
               "type": "images",
               "options": {
                 "images": {
-                  "src": "https://particles.js.org/images/cyan_amongus.png",
+                  "src": "https://i.pinimg.com/originals/7b/8b/9c/7b8b9cbc22da0f51cc6710d470a70abd.png",
                   "width": 500,
                   "height": 634
                 }
