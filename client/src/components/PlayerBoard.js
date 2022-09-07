@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useLocation, Navigate } from "react-router-dom";
 import { SocketContext } from '../context/socket';
+import ParticlesBackground from './Particles';
 
 const Circle = styled.div`
 `
@@ -61,6 +62,7 @@ const PlayerBoard = () => {
     return (
         players ? 
         <Board>
+            <ParticlesBackground></ParticlesBackground>
             <Circle style={{backgroundColor: "red", 
                 width: size,
                 height: size,
