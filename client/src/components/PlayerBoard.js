@@ -71,7 +71,7 @@ const PlayerBoard = () => {
 
 	return players ? (
 		<Wrapper>
-            <ClipboardCopyS copyText={window.location.pathname}/>
+            <ClipboardCopyS copyText={window.location.href}/>
 			<Board>
 				{/* <ParticlesBackground></ParticlesBackground> */}
 				<Circle
