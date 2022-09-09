@@ -54,9 +54,9 @@ const PlayerBoard = () => {
 	const numPlayers = players ? players.length : -1;
 
 	useEffect(() => {
-		socket.on("joinSuccess", (data) => setPlayers(data));
+		socket.on("newPlayerJoined", (data) => setPlayers(data.players));
 		return () => {
-			socket.off("joinSuccess", (data) => setPlayers(data));
+			socket.off("newPlayerJoined", (data) => setPlayers(data.players));
 		};
 	}, [socket]);
 

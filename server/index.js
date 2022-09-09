@@ -34,12 +34,14 @@ const generateRoom = () => {
 io.on('connection', (socket) => {
     console.log(`${socket.id} has connected`)
 
-    socket.on('createRoom', (username) => {
+    socket.on('createRoom', ({username}) => {
         const room = generateRoom();
         socket.join(room);
         joinRoom(rooms, room, username, socket.id);
+        socket.emit('joinSuccess', {room, players: rooms.get(room)});
+        console.log(rooms);
     })
-5
+
     socket.on('joinRoom', ({username, room}, callback) => {
         console.log(username, room)
         if (username === '' || room === '') {
@@ -53,7 +55,8 @@ io.on('connection', (socket) => {
                 return;
             };
             socket.join(room);
-            io.to(room).emit('joinSuccess', rooms.get(room));
+            socket.emit('joinSuccess', {room, players: rooms.get(room)});
+            io.to(room).emit('newPlayerJoined', {room, players: rooms.get(room)});
             if (rooms.get(room).length == 2) {
                 io.to(room).emit('gameStarting');
             }

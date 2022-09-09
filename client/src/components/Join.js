@@ -21,19 +21,19 @@ const Form = () => {
 	}, [location]);
 
 	const handleJoinSuccess = (data) => {
-		navigate("/board/" + values.room, { state: data });
+		console.log(data);
+		navigate("/board/" + data.room, { state: data.players });
 	};
 
 	useEffect(() => {
 		socket.on("joinSuccess", (data) => handleJoinSuccess(data));
 
 		return () => {
-			socket.off("joinSuccess", handleJoinSuccess);
+			socket.off("joinSuccess", (data) => handleJoinSuccess(data));
 		};
-	}, [socket, values]);
+	}, [socket]);
 
 	const handleChange = (e) => {
-		const value = e.target.value;
 		setValues({
 			...values,
 			[e.target.name]: e.target.value,
@@ -41,44 +41,54 @@ const Form = () => {
 	};
 
 	const joinRoom = (e) => {
-		e.preventDefault();
 		socket.emit("joinRoom", { ...values }, (error) => alert(error));
 	};
 
+	const createRoom = (e) => {
+		socket.emit("createRoom", {username: values.username}, (error) => alert(error));
+	}
+
 	return (
-		<form onSubmit={joinRoom}>
-			<Grid
-				container
-				direction="column"
-				alignItems="center"
-				justifyContent="center"
+		<Grid
+			container
+			direction="column"
+			alignItems="center"
+			justifyContent="center"
+		>
+			<TextField
+				variant="outlined"
+				name="username"
+				label="Username"
+				style={{ marginBottom: "2em" }}
+				onChange={handleChange}
+				value={values.username}
+			/>
+			<Button
+				size="large"
+				variant="contained"
+				color="primary"
+				style={{ marginBottom: "2em" }}
+				onClick={createRoom}
 			>
-				<TextField
-					variant="outlined"
-					name="username"
-					label="Username"
-					style={{ marginBottom: "2em" }}
-					onChange={handleChange}
-					value={values.username}
-				/>
-				<TextField
-					variant="outlined"
-					label="Room"
-					name="room"
-					style={{ marginBottom: "2em" }}
-					onChange={handleChange}
-					value={values.room}
-				/>
-				<Button
-					type="submit"
-					size="large"
-					variant="contained"
-					color="primary"
-				>
-					Join
-				</Button>
-			</Grid>
-		</form>
+				Create Room
+			</Button>
+			<TextField
+				variant="outlined"
+				label="Room"
+				name="room"
+				style={{ marginBottom: "2em" }}
+				onChange={handleChange}
+				value={values.room}
+			/>
+			<Button
+				size="large"
+				variant="contained"
+				color="primary"
+				onClick={joinRoom}
+			>
+				Join
+			</Button>
+		</Grid>
 	);
 };
 
